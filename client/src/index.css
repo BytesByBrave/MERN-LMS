@@ -6,11 +6,11 @@
     font-family: Outfit;
 }
 .course-details-heading-small {
-  font-size: 26px;
+  font-size: 30px;
   line-height: 36px;
 }
 .course-details-heading-large {
-  font-size: 36px;
+  font-size: 40px;
   line-height: 46px;
 }
 .home-heading-small {
@@ -28,4 +28,8 @@
 .grid-auto {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.h-section-height {
+  height: 500px;
 }
