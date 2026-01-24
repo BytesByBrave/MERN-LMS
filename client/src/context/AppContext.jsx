@@ -45,7 +45,7 @@ export const AppContextProvider = (props) => {
     }
 
     // Function to calculate No lecture in a course
-    const calculateNoOfLectures = () => {
+    const calculateNoOfLectures = (course) => {
         let totalLectures = 0;
         course.courseContent.forEach(chapter => {
             if(Array.isArray(chapter.chapterContent)){
