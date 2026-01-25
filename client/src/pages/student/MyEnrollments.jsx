@@ -1,9 +1,27 @@
-import React, { useContext } from 'react'
+import React,{ useContext, useState } from 'react'
 import { AppContext } from '../../context/AppContext'
+import {Line} from 'rc-progress'
+import Footer from '../../components/students/Footer'
 
 const MyEnrollments = () => {
 
-    const { enrolledCourses, calculateCourseDuration } = useContext(AppContext) 
+    const { enrolledCourses, calculateCourseDuration, navigate } = useContext(AppContext)
+    const [progressArray, setProgressArray] = useState([
+        {lectureCompleted: 2, totalLEctures: 4},
+        {lectureCompleted: 1, totalLEctures: 5},
+        {lectureCompleted: 3, totalLEctures: 6},
+        {lectureCompleted: 4, totalLEctures: 4},
+        {lectureCompleted: 0, totalLEctures: 3},
+        {lectureCompleted: 5, totalLEctures: 7},
+        {lectureCompleted: 6, totalLEctures: 8},
+        {lectureCompleted: 2, totalLEctures: 6},
+        {lectureCompleted: 4, totalLEctures: 10},
+        {lectureCompleted: 3, totalLEctures: 5},
+        {lectureCompleted: 7, totalLEctures: 7},
+        {lectureCompleted: 1, totalLEctures: 4},
+        {lectureCompleted: 0, totalLEctures: 2},
+        {lectureCompleted: 5, totalLEctures: 5},
+    ])
 
     return (
         <>
@@ -24,23 +42,27 @@ const MyEnrollments = () => {
                             <td className='md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3'> 
                                 <img src={course.courseThumbnail} alt="" className='w-14 sm:w-24 ms:w-28'/>
                                 <div className='flex-1'>
-                                    <p className='mb-1 max-sm:text-sm'>{course.courseTitle}</p> 
+                                    <p className='mb-1 max-sm:text-sm'>{course.courseTitle}</p>
+                                    <Line strokeWidth={2} percent={progressArray[index] ? 
+                                        (progressArray[index].lectureCompleted * 100) / progressArray[index].totalLEctures : 0 }className='bg-gray-300 rounded-full'/>
                                 </div>
                             </td>
                             <td className='px-4 py-3 max-sm:hidden'> 
                                 {calculateCourseDuration(course)}
                             </td>
                             <td className='px-4 py-3 max-sm:hidden'>
-                                4 / 10 <span>Lectures</span>
+                                {progressArray[index] && `${progressArray[index].lectureCompleted} / ${progressArray[index].totalLEctures}`}<span>Lectures</span>
                             </td>
                             <td className='px-4 py-3 max-sm:text-right '>
-                                <button className='px-3 sm:px-5 py-1.5 sm:py-2 bg-blue-600 max-sm:text-xs text-white'>In Progress</button>
+                                <button className='px-3 sm:px-5 py-1.5 sm:py-2 bg-blue-600 max-sm:text-xs text-white' 
+                                onClick={()=>navigate('/player/' + course._id)}>{progressArray[index] && progressArray[index].lectureCompleted / progressArray[index].totalLEctures === 1 ? 'Completed' : 'In Progress'}</button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
         </div>
+        <Footer/> 
         </>
     )
 }
