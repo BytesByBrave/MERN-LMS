@@ -5,6 +5,7 @@ import { assets } from '../../assets/assets'
 import humanizeDuration from 'humanize-duration'
 import Youtube from 'react-youtube'
 import Footer from '../../components/students/Footer'
+import Rating from '../../components/students/Rating'
 
 const Player = () => {
 
@@ -34,7 +35,7 @@ const Player = () => {
 
     return (
         <>
-        <div className='p-4  sm:p-10 flex flex-col-reverse md:grid md:grid-cols-2 gap-10 md:px-36'>
+        <div className='p-4 sm:p-10 flex flex-col-reverse md:grid md:grid-cols-2 gap-10 md:px-36'>
 
             {/* left column */}
             <div className='text-gray-800'>
@@ -72,6 +73,7 @@ const Player = () => {
                 </div>
                 <div className='flex items-center gap-2 py-3 mt-10'>
                     <h1 className='text-xl font-bold'>Rate this course:</h1>
+                    <Rating initialRating={0}/> 
                 </div>
             </div>
 
