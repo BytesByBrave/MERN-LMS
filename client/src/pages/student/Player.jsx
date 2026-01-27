@@ -34,8 +34,8 @@ const Player = () => {
     }, [enrolledCourses])
 
     return (
-        <>
-        <div className='p-4 sm:p-10 flex flex-col-reverse md:grid md:grid-cols-2 gap-10 md:px-36'>
+        <div className='flex flex-col min-h-screen'>
+        <div className='flex-1 p-4 sm:p-10 flex flex-col-reverse md:grid md:grid-cols-2 gap-10 md:px-36'>
 
             {/* left column */}
             <div className='text-gray-800'>
@@ -93,7 +93,7 @@ const Player = () => {
 
         </div>
         <Footer/> 
-        </>
+        </div>
     )
 }
 
