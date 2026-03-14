@@ -113,10 +113,13 @@ const AddCourse = () => {
                                     <input type="text" className='mt-1 block w-full border rounded py-1 px-2'
                                     value={lectureDetails.isPreview} onChange={(e) =>setLectureDetails({...lectureDetails, isPreview: e.target.checkbox})}/>
                                 </div>
+                                <button type='button' className='w-full bg-blue-400 text-white px-4 py-2 rounded'>Add</button>
+                                <img src={assets.cross_icon} onClick={()=> setShowPopup(false)} alt="" className='absolute top-4 right-4 w-4 cursor-pointer'/>
                             </div>
                         </div>
                     )}
                 </div>
+                <button type='submit' className='bg-black text-white w-max py-2.5 px-8 rounded my-4'>ADD</button>
             </form>
         </div>
     )
