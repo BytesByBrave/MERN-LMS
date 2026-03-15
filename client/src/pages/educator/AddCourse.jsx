@@ -57,7 +57,12 @@ const AddCourse = () => {
         setChapters(
             chapters.map((chapter) => {
                 if (chapter.chapterId === currentChapterId) {
-                    const newLecture = { ...lectureDetails };
+                    const newLecture = {
+                        ...lectureDetails,
+                        lectureOrder: chapter.chapterContent.length > 0 ?
+                            chapter.chapterContent.slice(-1)[0].lectureOrder + 1 : 1,
+                        lectureId: uniqueId()
+                    };
                     chapter.chapterContent.push(newLecture);
                 }
                 return chapter;
@@ -71,6 +76,10 @@ const AddCourse = () => {
             isPreview: false,
         });
     };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+    }
 
     const handleLecture = (action, chapterId, lectureIndex) => {
         if (action === 'add') {
@@ -96,7 +105,7 @@ const AddCourse = () => {
 
     return (
         <div className='h-screen overflow-scroll flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0'>
-            <form className='flex flex-col gap-4 max-w-md w-full text-gray-500'>
+            <form onSubmit={handleSubmit} className='flex flex-col gap-4 max-w-md w-full text-gray-500'>
                 <div className='flex flex-col gap-1'>
                     <p>Course Title</p>
                     <input type="text" placeholder='Type here' onChange={e => setCourseTitle(e.target.value)} value={courseTitle}
@@ -142,7 +151,7 @@ const AddCourse = () => {
                                 <div className='p-4'>
                                     {chapter.chapterContent.map((lecture, lectureIndex) => (
                                         <div className='flex items-center justify-between mb-2' key={lectureIndex}>
-                                            <span>{lectureIndex + 1} {lecture.lectureTitle} - {lecture.lectureDuration} mins - <a href={lecture.lectureUrl} target='_blank' className='text-blue-500'>Link</a> - {lecture.isPreviewFree ? 'Free Preview' : 'Paid'}</span>
+                                            <span>{lectureIndex + 1} {lecture.lectureTitle} - {lecture.lectureDuration} mins - <a href={lecture.lectureUrl} target='_blank' className='text-blue-500'>Link</a> - {lecture.isPreview ? 'Free Preview' : 'Paid'}</span>
                                             <img src={assets.cross_icon} alt="" onClick={() => handleLecture('remove', chapter.chapterId, lectureIndex)} className='cursor-pointer' />
                                         </div>
                                     ))}
@@ -188,7 +197,7 @@ const AddCourse = () => {
                                         value={lectureDetails.lectureUrl} onChange={(e) => setLectureDetails({ ...lectureDetails, lectureUrl: e.target.value })} />
                                 </div>
                                 <div className='mb-2 flex items-center gap-2'>
-                                    <p>is Preview Free ?</p>
+                                    <p>Is Preview Free ?</p>
                                     <input type="checkbox" className='border rounded'
                                         value={lectureDetails.isPreview} onChange={(e) => setLectureDetails({ ...lectureDetails, isPreview: e.target.checked })} />
                                 </div>
