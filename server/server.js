@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 import { connectDB } from './configs/mongodb.js';
+import { clerkWebhook } from './controllers/webhooks.js';
 
 //  Initialization of express app
 const app = express();
@@ -14,9 +15,8 @@ app.use(express.json());
 await connectDB(); 
 
 // Routes
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-}) 
+app.get('/', (req, res) => {res.send('Hello World!');}) 
+app.post('/clerk', express.json(), clerkWebhook)
 
 // Start the server
 const PORT = process.env.PORT || 4000;
