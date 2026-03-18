@@ -1,4 +1,4 @@
-import React,{ useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { AppContext } from '../../context/AppContext'
 import {Line} from 'rc-progress'
 import Footer from '../../components/students/Footer'
@@ -36,7 +36,7 @@ const MyEnrollments = () => {
         }
     }, [userData])
 
-     useEffect(() => {
+    useEffect(() => {
         if(enrolledCourses.length > 0){
             getCourseProgress()
         }
@@ -45,7 +45,8 @@ const MyEnrollments = () => {
 
     return (
         <>
-        <div className='md:px-36 px-8 pt-10'>
+        <div className='flex flex-col min-h-[calc(100vh-4rem)]'>
+        <div className='md:px-36 px-8 pt-10 flex-1'>
             <h1 className='text-2xl font-semibold '>MyEnrollment</h1>
             <table className='md:table-auto table-fixed w-full overflow-hidden border mt-10'>
                 <thead className='text-gray-900 border border-gray-500/20 text-sm text-left max-sm:hidden'>
@@ -83,6 +84,7 @@ const MyEnrollments = () => {
             </table>
         </div>
         <Footer/> 
+        </div>
         </>
     )
 }

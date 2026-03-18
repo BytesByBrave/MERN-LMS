@@ -29,7 +29,7 @@ const Navbar = () => {
                 setIsEducator(true)
                 toast.success(data.message)
             } else {
-                toast.error(data.error)
+                toast.error(data.message)
             }
         } catch (error) {
             toast.error(error.message)
