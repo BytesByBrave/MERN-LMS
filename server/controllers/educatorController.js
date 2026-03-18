@@ -9,6 +9,7 @@ export const updateRoleToEducator = async (req, res) => {
         const userId = req.auth.userId
 
         if (!userId) {
+            console.error("Clerk Auth Error: No userId found. Make sure your Bearer token is valid and not expired. (Clerk tokens expire in 1 minute by default)")
             return res.json({
                 success: false,
                 message: 'Unauthorized'
