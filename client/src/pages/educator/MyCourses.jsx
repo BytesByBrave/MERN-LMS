@@ -6,22 +6,26 @@ import axios from 'axios';
 
 const MyCourses = () => {
 
-    const { currency, allCourses, backendUrl, getToken } = useContext(AppContext)
+    const { currency, backendUrl, getToken, isEducator } = useContext(AppContext)
     const [courses, setCourses] = useState(null)
 
     const fetchEducatorCourses = async () => {
         try {
             const token = await getToken();
-            const { data } = await axios.get(backendUrl + '/api/educator/courses', { headers: { Authorization: `Bearer ${token}` } });
-            data.success ? setCourses(data.courses) : toast.error(data.message);
+            const {data} = await axios.get(backendUrl + '/api/educator/courses',
+                {headers: {Authorization: `Bearer ${token}`}}
+            )
+            data.success && setCourses(data.courses)
         } catch (error) {
-            toast.error(error.message);
+            toast.error(error.message)
         }
     }
 
     useEffect(()=> {
-        fetchEducatorCourses()
-    }, [])
+        if(isEducator){
+            fetchEducatorCourses()
+        }
+    }, [isEducator])
 
     return courses ? (
         <div className='h-screen flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0'>
