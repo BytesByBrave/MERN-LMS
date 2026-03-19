@@ -24,11 +24,10 @@ const Player = () => {
         enrolledCourses.map((course)=>{
             if(course._id === courseId){
                 setCourseData(course)
-                course.courseRating(() => {
-                    if(item.userid === userData._id){
-                        setInitialRating(item.Rating)
-                    }
-                })
+                const userRating = course.courseRatings.find(r => r.userId === userData._id)
+                if(userRating){
+                    setInitialRating(userRating.rating)
+                }
             }
         })
     }
@@ -65,7 +64,8 @@ const Player = () => {
     const getCourseProgress = async () => {
         try {
             const token = await getToken();
-            const {data} = await axios.get(backendUrl + '/api/user/get-course-progress', {courseId},
+            const {data} = await axios.post(backendUrl + '/api/user/get-course-progress', 
+                {courseId},
                 {headers: {Authorization: `Bearer ${token}`}}
             )
             if(data.success){
@@ -81,11 +81,11 @@ const Player = () => {
     const handleRate = async (rating) => {
         try {
             const token = await getToken()
-            const {data} = await axios.post(backendUrl + '/api/user/add-rating', {courseRating, rating}, 
+            const {data} = await axios.post(backendUrl + '/api/user/add-rating', {courseId, rating}, 
                 {headers: {Authorization: `Bearer ${token}`}}
             )
             if(data.success){
-                toast.success(success.message)
+                toast.success(data.message)
                 fetchUserEnrolledCourses()
             } else {
                 toast.error(data.message)
