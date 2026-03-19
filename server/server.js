@@ -22,6 +22,9 @@ const apiLimiter = rateLimit({
     message: 'Too many requests from this IP, please try again after 15 minutes'
 });
 
+// Stripe webhook MUST be registered BEFORE express.json() to preserve raw body
+app.post('/stripe', express.raw({ type: 'application/json' }), stripeWebhook)
+
 // middleware
 app.use(helmet());
 app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173', credentials: true }));
@@ -58,7 +61,6 @@ app.post('/clerk', express.json(), clerkWebhook)
 app.use('/api/educator', express.json(), educatorRouter)
 app.use('/api/course', express.json(), courseRouter)
 app.use('/api/user', express.json(), userRouter)
-app.post('/stripe', express.raw({ type: 'application/json' }), stripeWebhook)
 
 // Global Error Handler
 app.use(globalErrorHandler);

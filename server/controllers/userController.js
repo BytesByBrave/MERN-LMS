@@ -113,6 +113,53 @@ export const purchaseCourse = async (req, res, next) => {
     }
 }
 
+//  Verify purchase and complete enrollment (fallback for webhook)
+export const verifyPurchase = async (req, res, next) => {
+    try {
+        const userId = req.auth.userId
+        const userData = await User.findById(userId)
+
+        if (!userData) {
+            return res.json({ success: false, message: 'User not found' })
+        }
+
+        // Find all pending purchases for this user
+        const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY)
+        const pendingPurchases = await Purchase.find({ userId, status: 'pending' })
+
+        for (const purchase of pendingPurchases) {
+            // Check Stripe for payment status via checkout sessions
+            const sessions = await stripeInstance.checkout.sessions.list({
+                limit: 5,
+            })
+
+            for (const session of sessions.data) {
+                if (session.metadata.purchaseId === purchase._id.toString() && session.payment_status === 'paid') {
+                    // Payment confirmed — complete the enrollment
+                    const courseData = await Course.findById(purchase.courseId)
+                    if (courseData) {
+                        if (!courseData.enrolledStudents.includes(userId)) {
+                            courseData.enrolledStudents.push(userId)
+                            await courseData.save()
+                        }
+                        if (!userData.enrolledCourses.includes(purchase.courseId.toString())) {
+                            userData.enrolledCourses.push(courseData._id)
+                            await userData.save()
+                        }
+                    }
+                    purchase.status = 'completed'
+                    await purchase.save()
+                    break
+                }
+            }
+        }
+
+        res.json({ success: true, message: 'Purchases verified' })
+    } catch (error) {
+        next(error);
+    }
+}
+
 //  User course progress updater
 export const updateUserCourseProgress = async (req, res, next) => {
     try {
