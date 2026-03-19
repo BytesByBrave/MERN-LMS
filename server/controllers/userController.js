@@ -3,18 +3,30 @@ import Course from '../models/Course.js'
 import Purchase from '../models/Purchase.js';
 import Stripe from 'stripe';
 import CourseProgress from '../models/CourseProgress.js';
+import { clerkClient } from '@clerk/express';
 
 //  User controller to manage the user data in database
 export const getUserData = async (req, res, next) => {
     try {
         const userId = req.auth.userId;
-        const user = await User.findById(userId)
+        let user = await User.findById(userId)
 
-        if(!user){
-            return res.json({
-                success: false,
-                message: 'User not found'
-            })
+        if (!user) {
+            // Enterprise Fallback: If sandbox webhook failed, auto-sync from Clerk
+            try {
+                const clerkUser = await clerkClient.users.getUser(userId);
+                if (clerkUser) {
+                    const newUserData = {
+                        _id: clerkUser.id,
+                        email: clerkUser.emailAddresses[0].emailAddress,
+                        name: clerkUser.firstName + ' ' + clerkUser.lastName,
+                        imageUrl: clerkUser.imageUrl
+                    };
+                    user = await User.create(newUserData);
+                }
+            } catch(e) {
+                return res.json({ success: false, message: 'User not found' });
+            }
         }
         res.json({
             success: true,
@@ -33,8 +45,8 @@ export const userEnrolledCourses = async (req, res, next) => {
 
         if(!userData){
             return res.json({
-                success: false,
-                message: 'User not found'
+                success: true,
+                enrolledCourses: []
             })
         }
         res.json({

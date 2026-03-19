@@ -26,7 +26,7 @@ export const AppContextProvider = (props) => {
     // Fetch All Courses
     const fetchAllCourses = async () => {
         try {
-            const data = await axios.get(backendUrl + '/api/course/all');
+            const { data } = await axios.get(backendUrl + '/api/course/all');
             if(data.success){
                 setAllCourses(data.courses)
             } else {
@@ -39,7 +39,7 @@ export const AppContextProvider = (props) => {
     
     // Fetch userData
     const fetchUserData = async () => {
-        if(user.publicMetadata.userType === 'educator'){
+        if(user.publicMetadata.role === 'educator'){
             setIsEducator(true)
         }
         try {

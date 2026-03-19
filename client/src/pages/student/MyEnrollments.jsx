@@ -48,6 +48,9 @@ const MyEnrollments = () => {
         <div className='flex flex-col min-h-[calc(100vh-4rem)]'>
         <div className='md:px-36 px-8 pt-10 flex-1'>
             <h1 className='text-2xl font-semibold '>MyEnrollment</h1>
+            {enrolledCourses.length === 0 ? (
+                <p className='mt-10 text-gray-500'>You are not enrolled in any courses yet.</p>
+            ) : (
             <table className='md:table-auto table-fixed w-full overflow-hidden border mt-10'>
                 <thead className='text-gray-900 border border-gray-500/20 text-sm text-left max-sm:hidden'>
                     <tr>
@@ -65,23 +68,24 @@ const MyEnrollments = () => {
                                 <div className='flex-1'>
                                     <p className='mb-1 max-sm:text-sm'>{course.courseTitle}</p>
                                     <Line strokeWidth={2} percent={progressArray[index] ? 
-                                        (progressArray[index].lectureCompleted * 100) / progressArray[index].totalLEctures : 0 }className='bg-gray-300 rounded-full'/>
+                                        (progressArray[index].lectureCompleted * 100) / progressArray[index].totalLectures : 0 }className='bg-gray-300 rounded-full'/>
                                 </div>
                             </td>
                             <td className='px-4 py-3 max-sm:hidden'> 
                                 {calculateCourseDuration(course)}
                             </td>
                             <td className='px-4 py-3 max-sm:hidden'>
-                                {progressArray[index] && `${progressArray[index].lectureCompleted} / ${progressArray[index].totalLEctures}`}<span>Lectures</span>
+                                {progressArray[index] && `${progressArray[index].lectureCompleted} / ${progressArray[index].totalLectures}`}<span> Lectures</span>
                             </td>
                             <td className='px-4 py-3 max-sm:text-right '>
                                 <button className='px-3 sm:px-5 py-1.5 sm:py-2 bg-blue-600 max-sm:text-xs text-white' 
-                                onClick={()=>navigate('/player/' + course._id)}>{progressArray[index] && progressArray[index].lectureCompleted / progressArray[index].totalLEctures === 1 ? 'Completed' : 'In Progress'}</button>
+                                onClick={()=>navigate('/player/' + course._id)}>{progressArray[index] && progressArray[index].lectureCompleted / progressArray[index].totalLectures === 1 ? 'Completed' : 'In Progress'}</button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
+            )}
         </div>
         <Footer/> 
         </div>

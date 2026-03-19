@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { dummyStudentEnrolled } from '../../assets/assets'
-import Loading from '../../components/students/Loading'
+import { dummyStudentEnrolled } from '../../assets/assets.js'
+import Loading from '../../components/students/Loading.jsx'
 
 const StudentsEnrolled = () => {
 
