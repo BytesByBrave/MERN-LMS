@@ -77,7 +77,7 @@ export const getEducatorCourses = async (req, res, next) => {
 //  Educator dashboard data ( total earnings, total courses, total students enrolled)
 export const educatorDashboardData = async (req, res, next) => {
     try {
-        const educator = req.auth.userid
+        const educator = req.auth.userId
         const courses = await Course.find({educator})
         const totalCourses = courses.length;
         const courseIds = courses.map(course => course._id);
@@ -94,7 +94,7 @@ export const educatorDashboardData = async (req, res, next) => {
         for (const course of courses){
             const students = await User.find({
                 _id: {$in: course.enrolledStudents}
-            }, 'name _imageUrl');
+            }, 'name imageUrl');
             students.forEach(student => {
                 enrolledStudentsData.push({
                     courseTitle: course.courseTitle,

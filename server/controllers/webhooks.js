@@ -31,7 +31,7 @@ export const clerkWebhook = async (req, res, next)=> {
             }
             case 'user.updated': {
                 const userData = {
-                    email: data.email_address[0].email_address,
+                    email: data.email_addresses[0].email_address,
                     name: data.first_name + ' ' + data.last_name,
                     imageUrl: data.image_url
                 }
@@ -80,7 +80,7 @@ export const stripeWebhook = async (req, res, next) => {
             const userData = await User.findById(purchaseData.userId)
             const courseData = await Course.findById(purchaseData.courseId.toString())
 
-            courseData.enrolledStudents.push(userData) 
+            courseData.enrolledStudents.push(userData._id)
             await courseData.save()
 
             userData.enrolledCourses.push(courseData._id)
