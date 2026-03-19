@@ -5,7 +5,7 @@ import Purchase from "../models/Purchase.js";
 import Course from "../models/Course.js";
 
 //  Initialize the Api controller function to manage the Clerk user with database  as a webhook
-export const clerkWebhook = async (req, res)=> {
+export const clerkWebhook = async (req, res, next)=> {
     try {
         const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET)
 
@@ -49,26 +49,25 @@ export const clerkWebhook = async (req, res)=> {
                 break;
         }
     } catch (error) {
-        res.json({
-            success: false,
-            message: error.message
-        })
+        next(error);
     }
 }
 
 // Initialize the Stripe webhook to manage the course purchase and update the user enrolled courses
 const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY)
-export const stripeWebhook = async (req, res) => {
-    const sig = request.headers['stripe-signature'];
+export const stripeWebhook = async (req, res, next) => {
+    const sig = req.headers['stripe-signature'];
 
     let event;
     try {
-        event = Stripe.webhooks.constructEvent(request.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+        event = Stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
     }
     catch (err) {
-        response.status(400).send(`Webhook Error: ${err.message}`);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
     }
-    switch (event.type) {
+    
+    try {
+        switch (event.type) {
         case 'payment_intent.succeeded':{
             const paymentIntent = event.data.object;
             const paymentIntentId = paymentIntent.id;
@@ -112,5 +111,8 @@ export const stripeWebhook = async (req, res) => {
     }
 
         // Return a response to acknowledge receipt of the event
-        response.json({received: true});
+        res.json({received: true});
+    } catch (error) {
+        next(error);
+    }
 }

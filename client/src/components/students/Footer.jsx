@@ -31,7 +31,7 @@ const Footer = () => {
                     </div>
                 </div>
             </div>
-            <p className='py-4 text-center text-xs md:text-sm text-white/60'>Copyright 2025&copy; BraveStack. All rights Reserved.</p>
+            <p className='py-4 text-center text-xs md:text-sm text-white/60'>Copyright 2026&copy; BraveStack. All rights Reserved.</p>
         </footer>
     )
 }

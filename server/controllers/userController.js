@@ -5,7 +5,7 @@ import Stripe from 'stripe';
 import CourseProgress from '../models/CourseProgress.js';
 
 //  User controller to manage the user data in database
-export const getUserData = async (req, res) => {
+export const getUserData = async (req, res, next) => {
     try {
         const userId = req.auth.userId;
         const user = await User.findById(userId)
@@ -21,18 +21,12 @@ export const getUserData = async (req, res) => {
             user
         })
     } catch (error) {
-        console.error("ERROR IN GETUSERDATA:", error);
-        if (!res.headersSent) {
-            res.json({
-                success: false,
-                message: error.message
-            });
-        }
+        next(error);
     }
 }
 
 //  User enrolled courses with lecture links
-export const userEnrolledCourses = async (req, res) => {
+export const userEnrolledCourses = async (req, res, next) => {
     try {
         const userId = req.auth.userId;
         const userData = await User.findById(userId).populate('enrolledCourses')
@@ -48,15 +42,12 @@ export const userEnrolledCourses = async (req, res) => {
             enrolledCourses: userData.enrolledCourses
         })
     } catch (error) {
-        res.json({
-            success: false,
-            message: error.message
-        })
+        next(error);
     }
 }
 
 //  Purchase Course controller
-export const purchaseCourse = async (req, res) => {
+export const purchaseCourse = async (req, res, next) => {
     try {
         const {courseId} = req.body
         const {origin} = req.headers
@@ -106,15 +97,12 @@ export const purchaseCourse = async (req, res) => {
             session_url: session.url
         })
     } catch (error) {
-        res.json({
-            success: false,
-            message: error.message
-        })
+        next(error);
     }
 }
 
 //  User course progress updater
-export const updateUserCourseProgress = async (req, res) => {
+export const updateUserCourseProgress = async (req, res, next) => {
     try {
         const userId = req.auth.userId
         const {courseId, lectureId} = req.body
@@ -141,15 +129,12 @@ export const updateUserCourseProgress = async (req, res) => {
             message: 'Progress updated successfully'
         })
     } catch (error) {
-        res.json({
-            success: false,
-            message: error.message
-        })
+        next(error);
     }
 }
 
 //  Get user course progress
-export const getUserCourseProgress = async (req, res) => {
+export const getUserCourseProgress = async (req, res, next) => {
     try {
         const userId = req.auth.userId
         const {courseId, lectureId} = req.body
@@ -159,15 +144,12 @@ export const getUserCourseProgress = async (req, res) => {
             progressData
         })
     } catch (error) {
-        res.json({
-            success: false,
-            message: error.message
-        })
+        next(error);
     }
 }
 
 //  Add user rating and review for a course
-export const addUserRating = async (req, res) => {
+export const addUserRating = async (req, res, next) => {
         const userId = req.auth.userId
         const {courseId, rating} = req.body
 
@@ -204,9 +186,6 @@ export const addUserRating = async (req, res) => {
                 message: 'Rating added successfully'
             })
         } catch (error) {
-            return res.json({
-                success: false,
-                message: error.message
-            })
+            next(error);
         }
 }

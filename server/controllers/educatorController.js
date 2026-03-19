@@ -4,15 +4,15 @@ import Course from '../models/Course.js'
 import Purchase from '../models/Purchase.js'
 
 // Update the user's role to educator 
-export const updateRoleToEducator = async (req, res) => {
+export const updateRoleToEducator = async (req, res, next) => {
     try {
-        const userId = req.auth.userId
+        const userId = req.auth ? req.auth.userId : null;
 
         if (!userId) {
-            console.error("Clerk Auth Error: No userId found. Make sure your Bearer token is valid and not expired. (Clerk tokens expire in 1 minute by default)")
+            console.error("Clerk Auth Rejection Debug: req.auth is:", req.auth, " | Authorization Header:", req.headers.authorization);
             return res.json({
                 success: false,
-                message: 'Unauthorized'
+                message: 'Unauthorized - Invalid or missing Clerk Token'
             })
         }
 
@@ -26,15 +26,12 @@ export const updateRoleToEducator = async (req, res) => {
             message: 'Your role has been updated to educator',
         })
     } catch (error) {
-        res.json({
-            success: false,
-            message: error.message
-        })
+        next(error);
     }
 }
 
 // Add new course 
-export const addCourse = async (req, res) => {
+export const addCourse = async (req, res, next) => {
     try {
         const { courseData } = req.body
         const imageFile = req.file
@@ -59,15 +56,12 @@ export const addCourse = async (req, res) => {
             course: newCourse
         })
     } catch (error) {
-        res.json({
-            success: false,
-            message: error.message
-        })
+        next(error);
     }
 }
 
 //  Get educator courses
-export const getEducatorCourses = async (req, res) => {
+export const getEducatorCourses = async (req, res, next) => {
     try {
         const educator = req.auth.userId
         const courses = await Course.find({educator})
@@ -76,15 +70,12 @@ export const getEducatorCourses = async (req, res) => {
             courses
         })
     } catch (error) {
-        res.json({
-            success: false,
-            message: error.message
-        })
+        next(error);
     }
 }
 
 //  Educator dashboard data ( total earnings, total courses, total students enrolled)
-export const educatorDashboardData = async (req, res) => {
+export const educatorDashboardData = async (req, res, next) => {
     try {
         const educator = req.auth.userid
         const courses = await Course.find({educator})
@@ -118,15 +109,12 @@ export const educatorDashboardData = async (req, res) => {
             }
         })
     } catch (error) {
-        res.json({
-            success: false,
-            message: error.message
-        })
+        next(error);
     }
 }
 
 //  Get students enrolled students data with purchase date
-export const getEnrolledStudentsData = async (req, res) => {
+export const getEnrolledStudentsData = async (req, res, next) => {
     try {
         const educator = req.auth.userId
         const courses = await Course.find({educator})
@@ -149,9 +137,6 @@ export const getEnrolledStudentsData = async (req, res) => {
             enrolledStudents
         })
     } catch (error) {
-        res.json({
-            success: false,
-            message: error.message
-        })
+        next(error);
     }
 }
