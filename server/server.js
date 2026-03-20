@@ -35,8 +35,6 @@ const allowedOrigins = [
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 
-// Handle preflight OPTIONS for all routes (required for Vercel serverless)
-app.options('*', cors({ origin: allowedOrigins, credentials: true }));
 app.use('/api', apiLimiter);
 app.use(express.json());
 app.use(clerkMiddleware({ clockSkewInMs: 315360000000 })) // Allow 10-year clock skew for 2026 system time
