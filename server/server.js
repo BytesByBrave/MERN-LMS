@@ -27,36 +27,42 @@ app.post('/stripe', express.raw({ type: 'application/json' }), stripeWebhook)
 
 // middleware
 app.use(helmet());
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173', credentials: true }));
+
+// CORS: allow both local dev and production client URLs
+const allowedOrigins = [
+    'http://localhost:5173',
+    process.env.CLIENT_URL
+].filter(Boolean);
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (mobile apps, curl, etc.)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true
+}));
+
 app.use('/api', apiLimiter);
 app.use(express.json());
-app.use(clerkMiddleware({ clockSkewInMs: 315360000000 })) // Allow 10-year clock skew for 2026 system time
+app.use(clerkMiddleware())
 
-// Sandbox Time Bypass: Manually decode valid JWTs that Clerk rejected purely because of the OS clock offset
-app.use((req, res, next) => {
-    if (!req.auth || !req.auth.userId) {
-        const authHeader = req.headers.authorization;
-        if (authHeader && authHeader.startsWith('Bearer ')) {
-            try {
-                const token = authHeader.split(' ')[1];
-                const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-                if (payload && payload.sub) {
-                    req.auth = { ...req.auth, userId: payload.sub };
-                }
-            } catch(e) { }
-        }
+// Lazy database & Cloudinary connection (connect once per cold start)
+let isConnected = false;
+app.use(async (req, res, next) => {
+    if (!isConnected) {
+        await connectDB();
+        await connectCloudinary();
+        isConnected = true;
     }
     next();
 });
 
-// Database connection
-await connectDB();
-
-// Cloudinary connection
-await connectCloudinary();
-
 // Routes
-app.get('/', (req, res) => { res.send('Hello World!'); })
+app.get('/', (req, res) => { res.send('API is running 🚀'); })
 app.post('/clerk', express.json(), clerkWebhook)
 app.use('/api/educator', express.json(), educatorRouter)
 app.use('/api/course', express.json(), courseRouter)
@@ -65,9 +71,13 @@ app.use('/api/user', express.json(), userRouter)
 // Global Error Handler
 app.use(globalErrorHandler);
 
-// Start the server
-const PORT = process.env.PORT || 4000;
+// Start server only in non-Vercel environments (local dev)
+if (process.env.VERCEL !== '1') {
+    const PORT = process.env.PORT || 4000;
+    app.listen(PORT, () => {
+        console.log(`server is running on http://localhost:${PORT}`);
+    })
+}
 
-app.listen(PORT, () => {
-    console.log(`server is running on http://localhost:${PORT}`);
-})
+// Export for Vercel serverless
+export default app;
