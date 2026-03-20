@@ -227,7 +227,7 @@ export const addUserRating = async (req, res, next) => {
                 })
             }
             const user = await User.findById(userId)
-            if(!user || !user.enrolledCourses.includes(courseId)){
+            if(!user || !user.enrolledCourses.map(id => id.toString()).includes(courseId)){
                 return res.json({
                     success: false,
                     message: 'User has not enrolled in this course'
